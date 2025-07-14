@@ -1,7 +1,8 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-// Diğer modül ve servisleri de buraya import et (örneğin AuthModule, UsersModule, vs.)
+import { AuthModule } from './auth/auth.module';      // ✅ EKLENDİ
+import { UsersModule } from './users/users.module';    // ✅ EKLENDİ
 
 @Module({
   imports: [
@@ -29,7 +30,8 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
         };
       },
     }),
+    AuthModule,     // ✅ Buraya eklendi
+    UsersModule     // ✅ Buraya eklendi
   ],
 })
 export class AppModule {}
-

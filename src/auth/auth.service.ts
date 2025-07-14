@@ -1,37 +1,62 @@
-import { Injectable } from '@nestjs/common';
+// src/auth/auth.service.ts
+import { Injectable, BadRequestException, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 import { JwtService } from '@nestjs/jwt';
-import { UsersService } from '../users/users.service';
-import { RegisterDto } from './dto/register.dto';
-import { AuthResponseDto } from './dto/auth-response.dto';
-import { ForgotPasswordDto } from './dto/forgot-password.dto';
-import { ResetPasswordDto } from './dto/reset-password.dto';
+import * as bcrypt from 'bcrypt';
+import * as crypto from 'crypto';
+
 import { User } from '../users/entities/user.entity';
 import { EmailService } from '../common/services/email.service';
+import { RegisterDto } from './dto/register.dto';
+import { LoginDto } from './dto/login.dto';
+import { ForgotPasswordDto } from './dto/forgot-password.dto';
+import { ResetPasswordDto } from './dto/reset-password.dto';
+import { AuthResponseDto } from './dto/auth-response.dto';
 
 @Injectable()
 export class AuthService {
   constructor(
-    private usersService: UsersService,
+    @InjectRepository(User)
+    private userRepository: Repository<User>,
     private jwtService: JwtService,
     private emailService: EmailService,
   ) {}
 
-  async validateUser(email: string, password: string): Promise<Omit<User, 'password'> | null> {
-    const user = await this.usersService.findByEmail(email);
+  // EKSİK METHODLAR - Bunları ekleyin ⬇️
+  async register(registerDto: RegisterDto): Promise<AuthResponseDto> {
+    const { email, username, password, firstName, lastName } = registerDto;
 
-    if (user && await this.usersService.validatePassword(user, password)) {
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const { password, ...result } = user;
-      return result;
+    // Kullanıcı zaten var mı kontrol et
+    const existingUser = await this.userRepository.findOne({
+      where: [{ email }, { username }],
+    });
+
+    if (existingUser) {
+      throw new BadRequestException('Bu e-posta veya kullanıcı adı zaten kullanılıyor');
     }
-    return null;
-  }
 
-  async login(user: Omit<User, 'password'>): Promise<AuthResponseDto> {
-    const payload = { email: user.email, sub: user.id };
+    // Şifreyi hashle
+    const saltRounds = 10;
+    const hashedPassword = await bcrypt.hash(password, saltRounds);
+
+    // Yeni kullanıcı oluştur
+    const user = this.userRepository.create({
+      email,
+      username,
+      password: hashedPassword,
+      firstName,
+      lastName,
+    });
+
+    await this.userRepository.save(user);
+
+    // JWT token oluştur
+    const payload = { email: user.email, sub: user.id, username: user.username };
+    const accessToken = this.jwtService.sign(payload);
 
     return {
-      access_token: this.jwtService.sign(payload),
+      access_token: accessToken,
       user: {
         id: user.id,
         email: user.email,
@@ -42,37 +67,133 @@ export class AuthService {
     };
   }
 
-  async register(registerDto: RegisterDto): Promise<AuthResponseDto> {
-    const user = await this.usersService.create(registerDto);
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { password, ...userWithoutPassword } = user;
-    return this.login(userWithoutPassword);
+  async login(user: User): Promise<AuthResponseDto> {
+    const payload = { email: user.email, sub: user.id, username: user.username };
+    const accessToken = this.jwtService.sign(payload);
+
+    return {
+      access_token: accessToken,
+      user: {
+        id: user.id,
+        email: user.email,
+        username: user.username,
+        firstName: user.firstName,
+        lastName: user.lastName,
+      },
+    };
   }
 
-  // ŞİFRE SIFIRLAMA METODLARİ ⬇️
+  async validateUser(email: string, password: string): Promise<User | null> {
+    const user = await this.userRepository.findOne({
+      where: { email },
+    });
+
+    if (user && await bcrypt.compare(password, user.password)) {
+      return user;
+    }
+
+    return null;
+  }
+
+  // MEVCUT METHODLARINIZ ⬇️ (değişmedi)
   async forgotPassword(forgotPasswordDto: ForgotPasswordDto): Promise<{ message: string }> {
     const { email } = forgotPasswordDto;
-  
-  // Reset token oluştur (eğer email yoksa hata fırlatacak)
-    const resetToken = await this.usersService.createPasswordResetToken(email);
-  
-  // Email gönder
-    await this.emailService.sendPasswordResetEmail(email, resetToken);
-  
-    console.log(`📧 Şifre sıfırlama email'i gönderildi: ${email}`);
-  
-    return {
-      message: 'Şifre sıfırlama bağlantısı email adresinize gönderildi.',
-   };
- }
+    
+    console.log('🔍 Kullanıcı aranıyor:', email);
+    
+    const user = await this.userRepository.findOne({
+      where: { email }
+    });
+
+    if (!user) {
+      console.log('❌ Kullanıcı bulunamadı:', email);
+      throw new NotFoundException('Bu e-posta adresi ile kayıtlı kullanıcı bulunamadı');
+    }
+
+    console.log('✅ Kullanıcı bulundu:', user.username);
+
+    // Reset token oluştur
+    const resetToken = crypto.randomBytes(32).toString('hex');
+    const resetTokenExpiry = new Date();
+    resetTokenExpiry.setHours(resetTokenExpiry.getHours() + 1); // 1 saat geçerli
+
+    console.log('🔑 Reset token oluşturuldu:', resetToken.substring(0, 10) + '...');
+
+    // Token'ı hashleme (güvenlik için)
+    const hashedToken = crypto.createHash('sha256').update(resetToken).digest('hex');
+
+    // Kullanıcıyı güncelle
+    user.resetPasswordToken = hashedToken;
+    user.resetPasswordExpires = resetTokenExpiry;
+    await this.userRepository.save(user);
+
+    console.log('💾 Token veritabanına kaydedildi');
+
+    try {
+      // E-posta gönder
+      await this.emailService.sendPasswordReset(email, resetToken, user.username);
+      console.log('📧 E-posta gönderildi:', email);
+      
+      return {
+        message: 'Şifre sıfırlama linki e-posta adresinize gönderildi',
+      };
+    } catch (emailError) {
+      console.log('❌ E-posta gönderilemedi:', emailError.message);
+      throw new BadRequestException('E-posta gönderilirken hata oluştu');
+    }
+  }
 
   async resetPassword(resetPasswordDto: ResetPasswordDto): Promise<{ message: string }> {
     const { token, newPassword } = resetPasswordDto;
-    
-    await this.usersService.resetPassword(token, newPassword);
-    
+
+    console.log('🔍 Reset token kontrol ediliyor...');
+
+    // Token'ı hashle
+    const hashedToken = crypto.createHash('sha256').update(token).digest('hex');
+
+    // Geçerli token'ı bul
+    const user = await this.userRepository.findOne({
+      where: {
+        resetPasswordToken: hashedToken,
+      }
+    });
+
+    if (!user) {
+      console.log('❌ Geçersiz token');
+      throw new BadRequestException('Geçersiz token');
+    }
+
+    // ✅ DÜZELTİLDİ: undefined kontrolü eklendi
+    if (!user.resetPasswordExpires || user.resetPasswordExpires < new Date()) {
+      console.log('❌ Token süresi dolmuş');
+      throw new BadRequestException('Token süresi dolmuş');
+    }
+
+    console.log('✅ Token geçerli, şifre güncelleniyor:', user.username);
+
+    // Yeni şifreyi hashle
+    const saltRounds = 10;
+    const hashedPassword = await bcrypt.hash(newPassword, saltRounds);
+
+    // ✅ DÜZELTİLDİ: null yerine undefined kullanıldı
+    user.password = hashedPassword;
+    user.resetPasswordToken = undefined;
+    user.resetPasswordExpires = undefined;
+    await this.userRepository.save(user);
+
+    console.log('💾 Şifre güncellendi');
+
+    try {
+      // Onay e-postası gönder
+      await this.emailService.sendPasswordResetConfirmation(user.email, user.username);
+      console.log('📧 Onay e-postası gönderildi');
+    } catch (emailError) {
+      console.log('⚠️ Onay e-postası gönderilemedi:', emailError.message);
+      // Şifre değişti ama mail gitmedi, yine de başarılı sayalım
+    }
+
     return {
-      message: 'Şifreniz başarıyla güncellendi. Yeni şifrenizle giriş yapabilirsiniz.',
+      message: 'Şifreniz başarıyla güncellendi',
     };
   }
 }

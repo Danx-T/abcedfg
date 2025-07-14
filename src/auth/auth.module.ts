@@ -1,4 +1,6 @@
+// src/auth/auth.module.ts
 import { Module } from '@nestjs/common';
+import { TypeOrmModule } from '@nestjs/typeorm'; // ← BU IMPORT'U EKLEYİN
 import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
 import { UsersModule } from '../users/users.module';
@@ -8,12 +10,14 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { LocalStrategy } from './strategies/local.strategy';
 import { EmailService } from '../common/services/email.service';
+import { User } from '../users/entities/user.entity'; // ← BU IMPORT'U EKLEYİN
 
 @Module({
   imports: [
+    TypeOrmModule.forFeature([User]), // ← BU SATIRI EKLEYİN
     UsersModule,
     PassportModule,
-    ConfigModule, // EmailService için gerekli
+    ConfigModule,
     JwtModule.registerAsync({
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => ({
@@ -28,7 +32,7 @@ import { EmailService } from '../common/services/email.service';
     AuthService, 
     LocalStrategy, 
     JwtStrategy, 
-    EmailService, // EmailService'i provider olarak ekledik
+    EmailService,
   ],
   exports: [AuthService],
 })
