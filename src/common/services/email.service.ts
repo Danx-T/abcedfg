@@ -16,16 +16,17 @@ export class EmailService {
         user: this.configService.get<string>('MAIL_USER'),
         pass: this.configService.get<string>('MAIL_PASS'),
       },
-        tls: {
-    rejectUnauthorized: false, 
-  },
+      tls: {
+        rejectUnauthorized: false, 
+      },
     });
   }
 
-  // MEVCUT METHOD - güncellendi ⬇️
+  // Şifre sıfırlama maili gönder - resetUrl frontend URL olarak ayarlandı
   async sendPasswordReset(email: string, token: string, username: string): Promise<void> {
-    const resetUrl = `http://localhost:3000/auth/reset-password?token=${token}`;
-    
+    // BURADA FRONTEND SAYFANIN URL'Sİ OLMALI
+    const resetUrl = `http://localhost:5500/frontend/password/reset-password.html?token=${token}`;
+
     const mailOptions = {
       from: this.configService.get<string>('MAIL_FROM'),
       to: email,
@@ -63,7 +64,7 @@ export class EmailService {
     console.log(`✅ Şifre sıfırlama e-postası gönderildi: ${email}`);
   }
 
-  // YENİ METHOD ⬇️
+  // Şifre başarıyla değişti onayı maili
   async sendPasswordResetConfirmation(email: string, username: string): Promise<void> {
     const mailOptions = {
       from: this.configService.get<string>('MAIL_FROM'),
@@ -97,7 +98,7 @@ export class EmailService {
     console.log(`✅ Şifre değişiklik onayı gönderildi: ${email}`);
   }
 
-  // ESKI METHOD - geriye dönük uyumluluk için bırakıyoruz
+  // Geriye dönük uyumluluk
   async sendPasswordResetEmail(email: string, token: string): Promise<void> {
     await this.sendPasswordReset(email, token, 'Kullanıcı');
   }

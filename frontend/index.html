@@ -32,7 +32,13 @@
 
   <hr />
 
-  <button id="logoutBtn" style="display:none;">Çıkış Yap</button>
+  <!-- 🔐 Şifremi Unuttum Modal -->
+  <div id="forgotPasswordModal" style="display:none; background:#fff; padding:20px; border:1px solid #ccc; position:fixed; top:30%; left:50%; transform:translate(-50%, -30%); z-index:999; box-shadow: 0 0 10px rgba(0,0,0,0.3);">
+    <h3>Şifreni mi unuttun?</h3>
+    <input type="email" id="forgotEmailInput" placeholder="E-posta adresinizi girin" style="width:100%; padding:10px; margin-bottom:10px;">
+    <button id="sendForgotEmailBtn">Gönder</button>
+    <button onclick="closeForgotModal()" style="margin-top:10px;">İptal</button>
+  </div>
 
   <script src="app.js"></script>
 </body>

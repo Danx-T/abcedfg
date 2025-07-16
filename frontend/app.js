@@ -2,8 +2,8 @@ const apiBaseUrl = 'http://localhost:3000/auth';
 
 const loginForm = document.getElementById('loginForm');
 const registerForm = document.getElementById('registerForm');
-const logoutBtn = document.getElementById('logoutBtn');
 const forgotPasswordBtn = document.getElementById('forgotPasswordBtn');
+const sendForgotEmailBtn = document.getElementById('sendForgotEmailBtn');
 
 // 🚪 Giriş
 loginForm.addEventListener('submit', async e => {
@@ -21,7 +21,6 @@ loginForm.addEventListener('submit', async e => {
     const data = await res.json();
     localStorage.setItem('accessToken', data.access_token);
     alert('Giriş başarılı!');
-    logoutBtn.style.display = 'inline';
   } catch (err) {
     alert(err.message);
   }
@@ -53,38 +52,42 @@ registerForm.addEventListener('submit', async e => {
   }
 });
 
-// 🚪 Çıkış
-logoutBtn.addEventListener('click', () => {
-  localStorage.removeItem('accessToken');
-  alert('Çıkış yapıldı!');
-  logoutBtn.style.display = 'none';
+// 🔐 Şifremi Unuttum modalını aç
+forgotPasswordBtn.addEventListener('click', () => {
+  document.getElementById('forgotPasswordModal').style.display = 'block';
 });
 
-// 🔐 Şifremi Unuttum
-forgotPasswordBtn.addEventListener('click', async () => {
-  const email = prompt("Şifreni sıfırlamak için e-posta adresini gir:");
+// 🔐 Modalı kapat
+function closeForgotModal() {
+  document.getElementById('forgotPasswordModal').style.display = 'none';
+}
 
-  if (!email) return;
+// 🔐 Mail gönder
+sendForgotEmailBtn.addEventListener('click', async () => {
+  const email = document.getElementById('forgotEmailInput').value;
+
+  if (!email) {
+    alert("Lütfen bir e-posta adresi girin.");
+    return;
+  }
 
   try {
     const response = await fetch(`${apiBaseUrl}/forgot-password`, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ email })
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email }),
     });
 
     const data = await response.json();
 
     if (response.ok) {
-      alert("Şifre sıfırlama bağlantısı email adresine gönderildi.");
-      console.log("📩 Reset token backend log'unda olacak.");
+      alert("📩 Şifre sıfırlama bağlantısı e-posta adresinize gönderildi.");
+      closeForgotModal();
     } else {
       alert(data.message || "Bir hata oluştu.");
     }
   } catch (err) {
-    console.error("❌ İstek sırasında hata:", err);
-    alert("Sunucuya bağlanırken hata oluştu.");
+    console.error("❌ Sunucu hatası:", err);
+    alert("Sunucuya bağlanırken bir hata oluştu.");
   }
 });
