@@ -19,9 +19,9 @@ async function bootstrap() {
     }),
   );
 
-  // CORS ayarları
+  // CORS ayarları - HER DOMAINE AÇIK
   app.enableCors({
-    origin: ['http://localhost:3000', 'http://localhost:3001'],
+    origin: '*',
     credentials: true,
   });
 

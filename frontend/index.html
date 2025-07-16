@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Login & Register</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <h1>Kullanıcı Girişi</h1>
+
+  <form id="loginForm">
+    <input type="email" id="loginEmail" placeholder="Email" required />
+    <input type="password" id="loginPassword" placeholder="Şifre" required minlength="6" />
+    <button type="submit">Giriş Yap</button>
+  </form>
+
+  <button id="forgotPasswordBtn">Şifreni mi unuttun?</button>
+
+  <hr />
+
+  <h1>Kayıt Ol</h1>
+
+  <form id="registerForm">
+    <input type="email" id="registerEmail" placeholder="Email" required />
+    <input type="text" id="registerUsername" placeholder="Kullanıcı Adı" required minlength="3" />
+    <input type="password" id="registerPassword" placeholder="Şifre" required minlength="6" />
+    <input type="text" id="registerFirstName" placeholder="Ad (opsiyonel)" />
+    <input type="text" id="registerLastName" placeholder="Soyad (opsiyonel)" />
+    <button type="submit">Kayıt Ol</button>
+  </form>
+
+  <hr />
+
+  <button id="logoutBtn" style="display:none;">Çıkış Yap</button>
+
+  <script src="app.js"></script>
+</body>
+</html>
