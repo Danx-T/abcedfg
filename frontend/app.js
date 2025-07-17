@@ -17,10 +17,19 @@ loginForm.addEventListener('submit', async e => {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email, password }),
     });
+
     if (!res.ok) throw new Error('Giriş başarısız');
+
     const data = await res.json();
+
+    // 🔐 Token ve kullanıcı bilgilerini sakla
     localStorage.setItem('accessToken', data.access_token);
-    alert('Giriş başarılı!');
+    localStorage.setItem('username', data.user.username);
+    localStorage.setItem('email', data.user.email);
+
+    // ✅ Başarılı girişten sonra dashboard'a yönlendir
+    window.location.href = 'dashboard/dashboard.html';
+
   } catch (err) {
     alert(err.message);
   }
@@ -41,10 +50,12 @@ registerForm.addEventListener('submit', async e => {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email, username, password, firstName, lastName }),
     });
+
     if (!res.ok) {
       const err = await res.json();
       throw new Error(err.message || 'Kayıt başarısız');
     }
+
     alert('Kayıt başarılı! Giriş yapabilirsiniz.');
     registerForm.reset();
   } catch (err) {
