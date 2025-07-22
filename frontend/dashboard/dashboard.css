@@ -106,3 +106,67 @@ body {
 .pagination button:hover {
   background-color: #376cd0;
 }
+
+/* Filtre butonu */
+.search-container {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+#filterBtn {
+  padding: 10px 15px;
+  background-color: #4c8bf5;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.filter-menu {
+  background-color: #fff;
+  padding: 15px;
+  margin: 10px 40px;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
+.filter-menu label {
+  display: flex;
+  flex-direction: column;
+  font-size: 14px;
+}
+
+#applyFilters {
+  padding: 10px 15px;
+  background-color: #4c8bf5;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background-color 0.2s ease;
+}
+
+#applyFilters:hover {
+  background-color: #376cd0;
+}
+.filter-menu input[type="text"],
+.filter-menu input[type="number"] {
+  padding: 8px 12px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 14px;
+  transition: border-color 0.2s ease;
+}
+
+.filter-menu input[type="text"]:focus,
+.filter-menu input[type="number"]:focus {
+  outline: none;
+  border-color: #4c8bf5;
+  box-shadow: 0 0 5px rgba(76, 139, 245, 0.5);
+}

@@ -10,11 +10,33 @@
   <header class="header">
     <div class="search-container">
       <input type="text" placeholder="Search..." id="searchInput" />
+      <button id="filterBtn">Filtrele</button>
     </div>
     <div class="user-info" id="userInfo">
       <!-- JavaScript ile doldurulacak -->
     </div>
   </header>
+
+  <!-- Filtre menüsü -->
+  <div id="filterMenu" class="filter-menu" style="display: none;">
+    <label>
+      Tür:
+      <input type="text" id="filterGenre" placeholder="örn. Action" />
+    </label>
+    <label>
+      Yıl:
+      <input type="number" id="filterYear" placeholder="örn. 2022" />
+    </label>
+    <label>
+      Yönetmen:
+      <input type="text" id="filterDirector" placeholder="örn. Nolan" />
+    </label>
+    <label>
+      IMDb Rating:
+      <input type="number" id="filterRating" placeholder="örn. 7.5" step="0.1" />
+    </label>
+    <button id="applyFilters">Uygula</button>
+  </div>
 
   <!-- Film posterlerini göstereceğimiz container -->
   <main class="films-container" id="filmsContainer"></main>
