@@ -63,25 +63,32 @@ export class AuthService {
         username: user.username,
         firstName: user.firstName,
         lastName: user.lastName,
+        role: user.role
       },
     };
   }
 
   async login(user: User): Promise<AuthResponseDto> {
-    const payload = { email: user.email, sub: user.id, username: user.username };
-    const accessToken = this.jwtService.sign(payload);
+    const payload = { 
+      email: user.email, 
+      sub: user.id, 
+      username: user.username,
+      role: user.role  
+   };
+  const accessToken = this.jwtService.sign(payload);
 
-    return {
-      access_token: accessToken,
-      user: {
-        id: user.id,
-        email: user.email,
-        username: user.username,
-        firstName: user.firstName,
-        lastName: user.lastName,
-      },
-    };
-  }
+  return {
+    access_token: accessToken,
+    user: {
+      id: user.id,
+      email: user.email,
+      username: user.username,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      role: user.role  
+    },
+  };
+}
 
   async validateUser(email: string, password: string): Promise<User | null> {
     const user = await this.userRepository.findOne({

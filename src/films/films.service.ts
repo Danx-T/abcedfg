@@ -28,13 +28,13 @@ export class FilmsService {
     return this.actorRepository.find();
   }
 
-  // Aktöre göre filmleri getir (QueryBuilder ile)
+  // Aktöre göre filmleri getir (join ile)
   async findFilmsByActor(actorId: number): Promise<Film[]> {
-    return this.filmRepository
-      .createQueryBuilder('film')
-      .innerJoin('film.filmActors', 'filmActor')
-      .innerJoin('filmActor.actor', 'actor')
-      .where('actor.id = :actorId', { actorId })
-      .getMany();
-}
+    const filmActors = await this.filmActorRepository.find({
+      where: { actor: { id: actorId } },
+      relations: ['film'], // film bilgisini dahil et
+    });
+
+    return filmActors.map(fa => fa.film);
+  }
 }

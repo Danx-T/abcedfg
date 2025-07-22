@@ -1,16 +1,19 @@
 import {
   Entity,
-  PrimaryGeneratedColumn,
   ManyToOne,
   JoinColumn,
+  PrimaryColumn,
 } from 'typeorm';
 import { Film } from './film.entity';
 import { Actor } from './actor.entity';
 
 @Entity('film_actors')
 export class FilmActor {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryColumn()
+  film_id: number;
+
+  @PrimaryColumn()
+  actor_id: number;
 
   @ManyToOne(() => Film, (film) => film.filmActors)
   @JoinColumn({ name: 'film_id' })
