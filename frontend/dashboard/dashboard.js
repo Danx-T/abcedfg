@@ -34,6 +34,7 @@ document.addEventListener("DOMContentLoaded", () => {
 const filmsPerPage = 10;
 let currentPage = 1;
 let allFilms = [];
+let filteredFilms = [];
 
 async function fetchFilms() {
   try {
@@ -52,9 +53,11 @@ async function fetchFilms() {
 function displayFilms() {
   const searchQuery = document.getElementById("searchInput").value.toLowerCase();
 
-  // Çoklu tür seçimi
-  const genreSelect = document.getElementById("filterGenre");
-  const selectedGenres = Array.from(genreSelect.selectedOptions).map(opt => opt.value.toLowerCase());
+  // Tür checkboxlarından seçilenleri alıyoruz
+  const genreCheckboxes = document.querySelectorAll("#genreCheckboxes input[type='checkbox']");
+  const selectedGenres = Array.from(genreCheckboxes)
+    .filter(cb => cb.checked)
+    .map(cb => cb.value.toLowerCase());
 
   const year = document.getElementById("filterYear").value;
   const director = document.getElementById("filterDirector").value.toLowerCase();
@@ -63,7 +66,6 @@ function displayFilms() {
   let filtered = allFilms.filter((film) => {
     const matchesSearch = film.title.toLowerCase().includes(searchQuery);
 
-    // Film birden fazla türe sahipse, burada virgülle ayırıp kontrol edebilirsin
     const filmGenres = film.genre.toLowerCase().split(",").map(g => g.trim());
     const matchesGenre = selectedGenres.length > 0
       ? selectedGenres.some(g => filmGenres.includes(g))
@@ -110,7 +112,7 @@ function displayPagination() {
   for (let i = 1; i <= pageCount; i++) {
     const btn = document.createElement("button");
     btn.textContent = i;
-    if (i === currentPage) btn.style.backgroundColor = "#2c3e50";
+    if (i === currentPage) btn.classList.add("active");
     btn.addEventListener("click", () => {
       currentPage = i;
       displayFilms();

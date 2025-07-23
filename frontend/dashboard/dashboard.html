@@ -19,17 +19,18 @@
 
   <!-- Filtre menüsü -->
   <div id="filterMenu" class="filter-menu" style="display: none;">
-    <label>
-      Tür:
-      <select id="filterGenre" multiple size="6">
-        <option value="action">Action</option>
-        <option value="crime">Crime</option>
-        <option value="drama">Drama</option>
-        <option value="fantasy">Fantasy</option>
-        <option value="science fiction">Science Fiction</option>
-        <option value="war">War</option>
-      </select>
-    </label>
+    <div class="filter-section">
+      <label><strong>Tür:</strong></label>
+      <div id="genreCheckboxes">
+        <label><input type="checkbox" value="action" /> Action</label>
+        <label><input type="checkbox" value="crime" /> Crime</label>
+        <label><input type="checkbox" value="drama" /> Drama</label>
+        <label><input type="checkbox" value="fantasy" /> Fantasy</label>
+        <label><input type="checkbox" value="science fiction" /> Science Fiction</label>
+        <label><input type="checkbox" value="war" /> War</label>
+      </div>
+    </div>
+
     <label>
       Yıl:
       <input type="number" id="filterYear" placeholder="örn. 2022" />
