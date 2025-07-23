@@ -170,3 +170,21 @@ body {
   border-color: #4c8bf5;
   box-shadow: 0 0 5px rgba(76, 139, 245, 0.5);
 }
+.filter-menu select {
+  padding: 8px 12px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 14px;
+  transition: border-color 0.2s ease;
+}
+
+.filter-menu select:focus {
+  outline: none;
+  border-color: #4c8bf5;
+  box-shadow: 0 0 5px rgba(76, 139, 245, 0.5);
+}
+
+.filter-menu select[multiple] {
+  height: auto;
+  min-height: 100px;
+}

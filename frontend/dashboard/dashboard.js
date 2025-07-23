@@ -51,14 +51,24 @@ async function fetchFilms() {
 
 function displayFilms() {
   const searchQuery = document.getElementById("searchInput").value.toLowerCase();
-  const genre = document.getElementById("filterGenre").value.toLowerCase();
+
+  // Çoklu tür seçimi
+  const genreSelect = document.getElementById("filterGenre");
+  const selectedGenres = Array.from(genreSelect.selectedOptions).map(opt => opt.value.toLowerCase());
+
   const year = document.getElementById("filterYear").value;
   const director = document.getElementById("filterDirector").value.toLowerCase();
   const rating = parseFloat(document.getElementById("filterRating").value);
 
   let filtered = allFilms.filter((film) => {
     const matchesSearch = film.title.toLowerCase().includes(searchQuery);
-    const matchesGenre = genre ? film.genre.toLowerCase().includes(genre) : true;
+
+    // Film birden fazla türe sahipse, burada virgülle ayırıp kontrol edebilirsin
+    const filmGenres = film.genre.toLowerCase().split(",").map(g => g.trim());
+    const matchesGenre = selectedGenres.length > 0
+      ? selectedGenres.some(g => filmGenres.includes(g))
+      : true;
+
     const matchesYear = year ? film.releaseYear == year : true;
     const matchesDirector = director ? film.director.toLowerCase().includes(director) : true;
     const matchesRating = !isNaN(rating) ? parseFloat(film.imdbRating) >= rating : true;
@@ -87,7 +97,7 @@ function displayFilms() {
     container.innerHTML = `<p style="padding: 1rem; font-size: 1.2rem;">Filtrelere uyan film bulunamadı.</p>`;
   }
 
-  filteredFilms = filtered; // sayfalama için
+  filteredFilms = filtered;
 }
 
 function displayPagination() {
