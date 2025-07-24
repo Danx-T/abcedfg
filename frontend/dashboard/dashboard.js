@@ -29,6 +29,18 @@ document.addEventListener("DOMContentLoaded", () => {
     displayFilms();
     displayPagination();
   });
+
+  // Tür dropdown butonu için açma-kapama
+  const genreDropdownBtn = document.getElementById("genreDropdownBtn");
+  const genreCheckboxes = document.getElementById("genreCheckboxes");
+
+  genreDropdownBtn.addEventListener("click", () => {
+    if (genreCheckboxes.style.display === "none" || genreCheckboxes.style.display === "") {
+      genreCheckboxes.style.display = "flex";
+    } else {
+      genreCheckboxes.style.display = "none";
+    }
+  });
 });
 
 const filmsPerPage = 10;

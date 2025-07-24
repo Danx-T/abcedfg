@@ -19,9 +19,10 @@
 
   <!-- Filtre menüsü -->
   <div id="filterMenu" class="filter-menu" style="display: none;">
-    <div class="filter-section">
-      <label><strong>Tür:</strong></label>
-      <div id="genreCheckboxes">
+    <div class="filter-section" id="filterGenreContainer">
+      <label>Tür:</label>
+      <button type="button" id="genreDropdownBtn" class="dropdown-btn">Tür seçin ▼</button>
+      <div id="genreCheckboxes" style="display: none; flex-direction: column; gap: 8px; max-height: 180px; overflow-y: auto; padding: 10px; border: 1px solid #ccc; border-radius: 8px; width: 180px; background-color: #fff;">
         <label><input type="checkbox" value="action" /> Action</label>
         <label><input type="checkbox" value="crime" /> Crime</label>
         <label><input type="checkbox" value="drama" /> Drama</label>
