@@ -135,16 +135,17 @@ body {
 }
 
 #applyFilters {
-  align-self: center;
-  margin-top: 22px;
-  padding: 0 20px;
-  height: 36px;
+  margin-left: 16px;
+  margin-bottom: 2px;
+  padding: 0 28px;
+  height: 40px;
   background-color: #4c8bf5;
   color: white;
   border: none;
   border-radius: 8px;
   cursor: pointer;
   font-weight: 600;
+  font-size: 16px;
   transition: background-color 0.2s ease;
 }
 
@@ -170,9 +171,15 @@ body {
 /* Filter Menu ana konteyner */
 #filterMenu {
   display: flex;
-  gap: 20px;
-  align-items: center;
+  gap: 32px;
+  align-items: flex-end;
   flex-wrap: wrap;
+  background-color: #f3f3f3;
+  padding: 28px 40px 28px 40px;
+  border: 1px solid #ccc;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+  margin: 32px 40px 0 40px;
 }
 
 /* Label düzenlemeleri */
@@ -180,10 +187,11 @@ body {
   display: flex;
   flex-direction: column;
   font-weight: 600;
-  font-size: 14px;
+  font-size: 15px;
   color: #333;
-  min-width: 100px;
-  margin: 10px 0 5px;
+  min-width: 140px;
+  gap: 8px;
+  margin: 0;
 }
 
 /* Input ve select ortak stilleri */
@@ -191,29 +199,24 @@ body {
 #filterMenu input[type="number"],
 #filterMenu select,
 #genreDropdownBtn {
-  height: 36px;
-  padding: 8px 12px;
-  font-size: 14px;
+  height: 40px;
+  padding: 10px 14px;
+  font-size: 15px;
   border: 1px solid #ccc;
   border-radius: 8px;
   box-sizing: border-box;
   transition: border-color 0.2s ease;
-  width: 160px;
-  cursor: pointer;
+  width: 180px;
   background-color: white;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
 }
 
 #filterMenu input[type="text"]:focus,
 #filterMenu input[type="number"]:focus,
 #filterMenu select:focus,
-#genreDropdownBtn:hover,
 #genreDropdownBtn:focus {
   border-color: #4c8bf5;
   outline: none;
-  box-shadow: 0 0 5px rgba(76, 139, 245, 0.5);
+  box-shadow: 0 0 5px rgba(76, 139, 245, 0.2);
 }
 
 /* Tür checkbox listesinin dropdown stili */
@@ -221,7 +224,7 @@ body {
   position: absolute;
   top: 100%;
   left: 0;
-  width: 160px;
+  width: 180px;
   background-color: white;
   border: 1px solid #ccc;
   border-radius: 8px;

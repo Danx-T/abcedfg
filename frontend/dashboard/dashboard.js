@@ -13,6 +13,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
   fetchFilms();
 
+  fetch("http://localhost:3000/films/actors")
+    .then(res => res.json())
+    .then(actors => {
+      window.allActors = actors;
+    })
+    .catch(err => console.error("Aktörler çekilemedi:", err));
+
   document.getElementById("searchInput").addEventListener("input", () => {
     currentPage = 1;
     displayFilms();
@@ -74,6 +81,7 @@ function displayFilms() {
   const year = document.getElementById("filterYear").value;
   const director = document.getElementById("filterDirector").value.toLowerCase();
   const rating = parseFloat(document.getElementById("filterRating").value);
+  const actorName = document.getElementById("filterActor").value.trim().toLowerCase();
 
   let filtered = allFilms.filter((film) => {
     const matchesSearch = film.title.toLowerCase().includes(searchQuery);
@@ -87,7 +95,20 @@ function displayFilms() {
     const matchesDirector = director ? film.director.toLowerCase().includes(director) : true;
     const matchesRating = !isNaN(rating) ? parseFloat(film.imdbRating) >= rating : true;
 
-    return matchesSearch && matchesGenre && matchesYear && matchesDirector && matchesRating;
+    // Actor filter logic
+    let matchesActor = true;
+    if (actorName) {
+      // Find actor(s) by partial name (case-insensitive)
+      const matchedActors = window.allActors?.filter(a => a.name.toLowerCase().includes(actorName));
+      if (matchedActors && matchedActors.length > 0) {
+        // Check if filmActors includes any of these actor ids
+        matchesActor = film.filmActors?.some(fa => matchedActors.some(actor => actor.id === fa.actor_id));
+      } else {
+        matchesActor = false;
+      }
+    }
+
+    return matchesSearch && matchesGenre && matchesYear && matchesDirector && matchesRating && matchesActor;
   });
 
   const start = (currentPage - 1) * filmsPerPage;
